@@ -1,0 +1,50 @@
+hello:
+  handler: handler.hello
+  events:
+    - http:
+        path: hello
+        method: get
+        cors: true
+        private: true
+getUser:
+  handler: lambdas/endpoints/getUser.handler
+  events:
+    - http:
+        path: user/{id}
+        method: get
+        cors: true
+getDataDynamoDB:
+  handler: lambdas/endpoints/getDataDynamoDB.handler
+  events:
+    - http:
+        path: data/{id}
+        method: get
+        cors: true
+createDataDynamoDB:
+  handler: lambdas/endpoints/createDataDynamoDB.handler
+  events:
+    - http:
+        path: data/{id}
+        method: post
+        cors: true
+createFile:
+  handler: lambdas/endpoints/createFile.handler
+  events:
+    - http:
+        path: file/{fileName}
+        method: post
+        cors: true
+getFile:
+  handler: lambdas/endpoints/getFile.handler
+  events:
+    - http:
+        path: file/{fileName}
+        method: get
+        cors: true
+proxy:
+  handler: lambdas/endpoints/proxy.handler
+  events:
+    - http:
+        path: chuck-norris/{proxy+}
+        method: ANY
+        cors: true

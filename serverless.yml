@@ -31,6 +31,9 @@ provider:
     AWS_DEFAULT_REGION: us-east-1
     tableName: ${self:custom.tableName}
     bucketName: ${self:custom.bucketName}
+  apiGateway:
+    apiKeys:
+      - MyFirstApiKey
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -40,67 +43,8 @@ provider:
       Action:
         - "s3:*"
       Resource: "*"
-  apiKeys:
-    - MyFirstApiKey
 
-functions:
-  hello:
-    handler: handler.hello
-    events:
-      - http:
-          path: hello
-          method: get
-          cors: true
-          private: true
-  getUser:
-    handler: lambdas/endpoints/getUser.handler
-    events:
-      - http:
-          path: user/{id}
-          method: get
-          cors: true
-  getDataDynamoDB:
-    handler: lambdas/endpoints/getDataDynamoDB.handler
-    events:
-      - http:
-          path: data/{id}
-          method: get
-          cors: true
-  createDataDynamoDB:
-    handler: lambdas/endpoints/createDataDynamoDB.handler
-    events:
-      - http:
-          path: data/{id}
-          method: post
-          cors: true
-  createFile:
-    handler: lambdas/endpoints/createFile.handler
-    events:
-      - http:
-          path: file/{fileName}
-          method: post
-          cors: true
-  getFile:
-    handler: lambdas/endpoints/getFile.handler
-    events:
-      - http:
-          path: file/{fileName}
-          method: get
-          cors: true
-  #okey this proxy not working
-  proxy:
-    handler: lambdas/endpoints/proxy.handler
-    events:
-      - http:
-          path: chuck-norris/{proxy+}
-          method: ANY
-          integration: http-proxy
-          request:
-              uri: http://api.icndb.com/{proxy}
-              parameters:
-                  paths:
-                      proxy: true
-
+functions: ${file(yml/functions.yml)}
 
 resources:
   Resources:
@@ -162,7 +106,7 @@ resources:
               Action: s3:GetObject
               Resource: !Sub "arn:aws:s3:::${self:custom.frontendBucketName}/*"
 
-Outputs:
-  FrontendBucketURL:
-    Value: !Sub "http://${self:custom.frontendBucketName}.s3.localhost.localstack.cloud:4566/index.html"
-    Description: URL de la app React en LocalStack S3 Website
+  Outputs:
+    FrontendBucketURL:
+      Value: !Sub "http://${self:custom.frontendBucketName}.s3.localhost.localstack.cloud:4566/index.html"
+      Description: URL de la app React en LocalStack S3 Website
