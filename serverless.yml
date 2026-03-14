@@ -39,6 +39,8 @@ provider:
       Action:
         - "s3:*"
       Resource: "*"
+  apiKeys:
+    - MyFirstApiKey
 
 functions:
   hello:
@@ -48,6 +50,7 @@ functions:
           path: hello
           method: get
           cors: true
+          private: true
   getUser:
     handler: lambdas/endpoints/getUser.handler
     events:
@@ -83,6 +86,19 @@ functions:
           path: file/{fileName}
           method: get
           cors: true
+  #okey this proxy not working
+  proxy:
+    handler: lambdas/endpoints/proxy.handler
+    events:
+      - http:
+          path: chuck-norris/{proxy+}
+          method: any
+          integration: http-proxy
+          request:
+            uri: https://api.icndb.com/{proxy}
+            parameters:
+              paths:
+                proxy: true
 
 
 resources:
