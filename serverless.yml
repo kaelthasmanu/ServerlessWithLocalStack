@@ -35,6 +35,15 @@ functions:
           path: hello
           method: get
           cors: true
+  getUser:
+    handler: lambdas/getUser.handler
+    events:
+      - http:
+          path: user/{id}
+          method: get
+          cors: true
+
+
 resources:
   Resources:
     DemoBucketUpload:
