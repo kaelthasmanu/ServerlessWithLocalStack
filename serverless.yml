@@ -27,6 +27,17 @@ provider:
     AWS_ACCESS_KEY_ID: test
     AWS_SECRET_ACCESS_KEY: test
     AWS_DEFAULT_REGION: us-east-1
+    tableName: ${self:custom.tableName}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:*
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - "s3:GetObject"
+        - "s3:PutObject"
+      Resource: "arn:aws:s3:::demo-bucket-upload/*"
 
 functions:
   hello:
@@ -37,13 +48,26 @@ functions:
           method: get
           cors: true
   getUser:
-    handler: lambdas/getUser.handler
+    handler: lambdas/endpoints/getUser.handler
     events:
       - http:
           path: user/{id}
           method: get
           cors: true
-
+  getDataDynamoDB:
+    handler: lambdas/endpoints/getDataDynamoDB.handler
+    events:
+      - http:
+          path: data/{id}
+          method: get
+          cors: true
+  createDataDynamoDB:
+    handler: lambdas/endpoints/createDataDynamoDB.handler
+    events:
+      - http:
+          path: data/{id}
+          method: post
+          cors: true
 
 resources:
   Resources:
