@@ -17,6 +17,7 @@ custom:
     lambda:
       mountCode: true
   tableName: MyDynamoDBTable
+  bucketName: demo-bucket-upload
 
 provider:
   name: aws
@@ -28,6 +29,7 @@ provider:
     AWS_SECRET_ACCESS_KEY: test
     AWS_DEFAULT_REGION: us-east-1
     tableName: ${self:custom.tableName}
+    bucketName: ${self:custom.bucketName}
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -35,9 +37,8 @@ provider:
       Resource: "*"
     - Effect: "Allow"
       Action:
-        - "s3:GetObject"
-        - "s3:PutObject"
-      Resource: "arn:aws:s3:::demo-bucket-upload/*"
+        - "s3:*"
+      Resource: "*"
 
 functions:
   hello:
@@ -68,13 +69,21 @@ functions:
           path: data/{id}
           method: post
           cors: true
+  createFile:
+    handler: lambdas/endpoints/createFile.handler
+    events:
+      - http:
+          path: file/{fileName}
+          method: post
+          cors: true
+
 
 resources:
   Resources:
     DemoBucketUpload:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: demo-bucket-upload
+        BucketName: ${self:custom.bucketName}
     MyDynamoDBTable:
       Type: AWS::DynamoDB::Table
       Properties:
