@@ -21,6 +21,18 @@ const Responses = {
             statusCode: 400,
             body: JSON.stringify(data)
         };
+    },
+    
+    _404(data = {}){
+        return {
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': '*',
+            },
+            statusCode: 404,
+            body: JSON.stringify(data)
+        };
     }
 };
 
