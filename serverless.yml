@@ -35,3 +35,9 @@ functions:
           path: hello
           method: get
           cors: true
+resources:
+  Resources:
+    DemoBucketUpload:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: demo-bucket-upload
