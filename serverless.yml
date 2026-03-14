@@ -1,0 +1,37 @@
+# Elimina o comenta las líneas de org y app si no las necesitas
+# org: kaelthasmanutesting
+# app: testing
+service: kaelthasmanutesting
+
+plugins:
+  - serverless-localstack
+  - serverless-offline
+
+custom:
+  localstack:
+    stages:
+      - local
+      - dev
+    endpoint: http://localhost:4566
+    autostart: false  # Asume que LocalStack ya está corriendo
+    lambda:
+      mountCode: true
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: local  # Importante: usar stage 'local' para activar LocalStack
+  region: us-east-1
+  environment:
+    AWS_ACCESS_KEY_ID: test
+    AWS_SECRET_ACCESS_KEY: test
+    AWS_DEFAULT_REGION: us-east-1
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
+          cors: true
