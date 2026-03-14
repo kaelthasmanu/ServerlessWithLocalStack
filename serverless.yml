@@ -18,6 +18,7 @@ custom:
       mountCode: true
   tableName: MyDynamoDBTable
   bucketName: demo-bucket-upload
+  frontendBucketName: demo-app-frontend
 
 provider:
   name: aws
@@ -92,13 +93,13 @@ functions:
     events:
       - http:
           path: chuck-norris/{proxy+}
-          method: any
+          method: ANY
           integration: http-proxy
           request:
-            uri: https://api.icndb.com/{proxy}
-            parameters:
-              paths:
-                proxy: true
+              uri: http://api.icndb.com/{proxy}
+              parameters:
+                  paths:
+                      proxy: true
 
 
 resources:
@@ -118,3 +119,50 @@ resources:
           - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+    myAssumeRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: myAssumeRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: myLambdaPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:*
+                    - s3:*
+                  Resource: "*"
+
+    # --- Frontend React App ---
+
+    FrontendBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.frontendBucketName}
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+
+    FrontendBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref FrontendBucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal: "*"
+              Action: s3:GetObject
+              Resource: !Sub "arn:aws:s3:::${self:custom.frontendBucketName}/*"
+
+Outputs:
+  FrontendBucketURL:
+    Value: !Sub "http://${self:custom.frontendBucketName}.s3.localhost.localstack.cloud:4566/index.html"
+    Description: URL de la app React en LocalStack S3 Website
