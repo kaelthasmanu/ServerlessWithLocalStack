@@ -76,6 +76,13 @@ functions:
           path: file/{fileName}
           method: post
           cors: true
+  getFile:
+    handler: lambdas/endpoints/getFile.handler
+    events:
+      - http:
+          path: file/{fileName}
+          method: get
+          cors: true
 
 
 resources:

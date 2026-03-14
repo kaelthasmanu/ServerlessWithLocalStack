@@ -14,8 +14,25 @@ const s3Client = new AWS.S3({
 });
 
 const S3 = {
-    async get (){
+    async get (filename, bucket){
+        const params = {
+            Bucket: bucket,
+            Key: filename
+        };
+        const result = await s3Client.getObject(params).promise();
 
+        if (!result || !result.Body) {
+            throw Error('File not found');
+        }
+
+        const bodyStr = result.Body.toString();
+        const contentType = result.ContentType || '';
+
+        if (contentType.includes('application/json') || filename.endsWith('.json')) {
+            return JSON.parse(bodyStr);
+        }
+
+        return bodyStr;
     },
     async write (fileName, bucket, data) {
         const params = {
