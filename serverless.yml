@@ -16,6 +16,7 @@ custom:
     autostart: false  # Asume que LocalStack ya está corriendo
     lambda:
       mountCode: true
+  tableName: MyDynamoDBTable
 
 provider:
   name: aws
@@ -50,3 +51,14 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: demo-bucket-upload
+    MyDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
